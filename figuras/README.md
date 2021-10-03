@@ -1,0 +1,1 @@
+# Aquí irán las figuras y los archivos gráficos del proyecto
