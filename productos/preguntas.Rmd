@@ -1,0 +1,23 @@
+---
+title: "Preguntas"
+output: html_document
+---
+```{r}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Preguntas sobre los datos 
+
+#**1** ¿Cuál sexo tiene mayor tendencia a atenderse en salud mental?
+
+#**2** ¿Cuál es la razón de la baja abrupta de atenciones a partir del último año?
+
+#**3** ¿Cuál es el rango etario que presenta mayor número de atenciones en salud mental?
+
+#**4** A partir de la pregunta 2, ¿podría aventurarse algún efecto real y medible en la salud mental de las personas, asociado a la baja atención?
+
+#**5** ¿Cuál es el grupo (edad y sexo) qué presenta más atenciones en salud mental en general? ¿Hay cambios año a año?
