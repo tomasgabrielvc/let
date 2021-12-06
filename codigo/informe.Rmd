@@ -1,0 +1,182 @@
+---
+title: "Atenciones en salud mental en Chile: una mirada exploratoria"
+output: html_document
+---
+
+<style type="text/css">
+  body{
+  font-size: 12pt;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<br>
+
+## Introducción
+
+En Chile, los problemas de salud mental afectan a una parte importante de la población. La OMS ubica a Chile entre los países más carga de morbilidad por enfermedades psiquiátricas en el mundo, con un 23,2%¹.
+
+A raíz de la rápida expansión del COVID-19 desde principios del año 2020, los sistemas de salud han dado mayor prioridad a tratar pacientes que presenten esta patología. Por lo anterior, las atenciones en áreas como salud mental han quedado suspendidas temporalmente.
+
+La baja abrupta de atenciones en salud mental a partir del año 2020 es un motivo de preocupación inmediata. Las repercusiones sanitarias que estarán presentes debido a esta baja, de no ser manejadas a tiempo, pueden ser graves. Allí radica la importancia de analizar este tema. Secundario a lo anterior, trabajar en el análisis de este tópico se alinea con el objetivo Nº 3.4 de los Objetivos de Desarrollo Sustentable 2030 de las Naciones Unidas, que dice relación con la promoción de la salud mental y el bienestar.
+
+El objetivo de este informe es analizar las atenciones en salud mental en Chile entre los años 2014 y 2021. Para lo anterior, se analizarán datos del Ministerio de Salud de Chile acerca de la cantidad de atenciones en este período.
+
+En primer lugar, se presentan los datos. A continuación, se presentan los resultados, en donde se expone la información mediante gráficos. Por último, se concluye en relación con lo observado en los resultados.
+
+<br>
+
+## Presentación de los datos
+
+En este informe se ha utilizado información pública obtenida a través de bases de datos del Departamento de Estadísticas e Información de Salud (DEIS) dispuestas por el Ministerio de Salud de Chile a través de su sitio web. 
+
+La información se desacargó desde el tablero Reportería Programa Salud Mental 2014-2021. Se obtuvieron 2 archivos: "sexo.csv" y "edad.csv". El archivo "sexo.csv" contiene las variables: "Año", "Hombres", "Mujeres". Todas numéricas. El archivo "edad.csv" contiene las variables "Año", "0 a 9 años", "10 14 años", (...), "45 a 59 años", "60 años y más". Todas las variables de este archivo son numéricas.
+
+El análisis presentado es descriptivo. Para el análisis, se ha utilizado el software estadístico R², junto con los paquetes incluidos en la librería tidyverse³ para la trasposición de las tablas originales y la construcción de gráficos. 
+
+<br>
+
+## Resultados
+
+En esta sección, presentamos los gráficos correspondientes a los diferentes análisis sobre la cantidad de atenciones en salud mental en Chile entre los años 2014 y 2021.
+
+En primer lugar, presentamos las atenciones totales, y luego segregamos las atenciones totales en atenciones por sexo y por grupo etario. 
+
+<br> 
+
+#### 1. Atenciones totales
+
+<br>
+```{r saludmental1, echo=F, message=FALSE, warning=FALSE}
+require(tidyverse)
+
+datos <- rio::import("sexo.csv") %>% 
+  as.data.frame()
+
+names(datos)[1] <- "Año"
+datos$Hombres <- as.numeric(gsub(".","",datos$Hombres,fixed = T))
+datos$Mujeres <- as.numeric(gsub(".","",datos$Mujeres,fixed = T))
+
+datos %>% 
+  mutate(total = Hombres + Mujeres) %>% 
+  select(-Hombres, -Mujeres) %>% 
+  ggplot(aes(Año, total/1000000)) +
+  geom_bar(stat = "identity", fill = "2114AC") +
+  labs(title = "Atenciones totales en salud mental",
+       x = "Año", y = "Cantidad de atenciones (en millones)") 
+  
+  
+
+```
+
+<br>
+
+En el gráfico anterior, se aprecia a partir del año 2014, y hasta el año 2020, la cantidad de atenciones en el área de salud mental tuvo un incremento paulatino.
+
+Además, se observa que durante los años 2020 y 2021 la cantidad de atenciones en salud mental disminuyeron sustantivamente. Esto es posible de explicar porque la mayoría de centros de atención de salud primaria (CESFAM, COSAM, hospitales, etc.) suspendieron sus atenciones en esta especialidad.
+
+<br>
+
+#### 2. Atenciones por sexo
+
+En el siguiente gráfico de puntos, podemos observar la cantidad de atenciones por sexo.
+
+<br>
+```{r saludmental2, echo=F, message=FALSE, warning=FALSE}
+require(tidyverse)
+require(GGally)
+
+
+datos <- rio::import("sexo.csv") %>% 
+  as.data.frame()
+
+edad <- rio::import("edad.csv") %>% 
+  as.data.frame()
+
+names(datos)[1] <- "Año"
+datos$Hombres <- as.numeric(gsub(".","",datos$Hombres,fixed = T))
+datos$Mujeres <- as.numeric(gsub(".","",datos$Mujeres,fixed = T))
+
+datos %>% 
+  ggplot() +
+  geom_line(aes(Año, Hombres/1000000), size = 0.6, col = "#F8766D") +
+  geom_point(aes(Año, Hombres/1000000, col = "Hombres"), size = 3.5) +
+  geom_line(aes(Año, Mujeres/1000000), size = 0.6, col = "#00BFC4") +
+  geom_point(aes(Año, Mujeres/1000000, col = "Mujeres"), size = 3.5) +
+  ggtitle("Atenciones en salud mental por sexo") +
+  labs(y = "Cantidad de atenciones (en millones)", color = "Sexo")
+  
+```
+
+<br>
+
+En el gráfico anterior, se observa que, año a año, la cantidad de atenciones en mujeres es al menos un 60% más que en hombres. De lo anterior, podemos suponer que las mujeres se han visto más afectadas con la suspensión de las atenciones, ya que dicho grupo son quienes reciben el mayor volumen de estas.
+
+<br>
+
+#### 3. Atenciones por edad
+
+Por último, podemos analizar la cantidad de atenciones diferenciadas por rango etario, a través del siguiente gráfico.
+
+<br>
+
+```{r saludmental3, echo=F, message=FALSE, warning=FALSE}
+require(tidyverse)
+
+edad <- rio::import("edad.csv", encoding = "UTF-8") %>% 
+  as_tibble()
+
+traspuesta <- pivot_longer(edad, cols = `0 a 9 años`:`60 años  y más`,
+                    names_to = "edad", values_to = "cantidad")
+
+traspuesta %>% 
+  ggplot(aes(Año, cantidad, fill = edad)) +
+  geom_bar(stat = "identity", show.legend = F) +
+  scale_fill_manual(values = c("#3D5B59","#B5E5CF","#7570B3","#B99095", 
+                               "#B2182B", "#2166AC", "#E6A0B3"))+
+  labs(title = "Atenciones en salud mental en Chile por edad",
+       y="Cantidad de atenciones (en miles)", x = "") +
+  facet_wrap(vars(edad))
+
+```
+
+<br>
+-
+En el de gráfico anterior, se observa que hay 2 grupos etarios que presentan un evidente y sostenido aumento de atenciones entre 2014 y fin de 2019. Estos grupos son: 15 a 19 años y 60 años y más.
+
+Este hallazgo nos permite sugerir preguntas con relación a causas potenciales que pueden haber generado este aumento en la cantidad de atenciones en adolescentes y adultos mayores.
+
+<br>
+
+## Conclusión
+
+Entender el fenónemo subyacente al proceso de deterioro de la salud mental en la población chilena es un reto de gran complejidad. A través de este informe, aportamos un punto de partida centrado en el análisis de la cantidad de atenciones.
+
+En base a los resultados de este informe, es posible establecer interrogantes en torno a las posibles consecuencias de esta baja drástica en las atenciones. Por ejemplo, en la segunda encuesta sobre los efectos del COVID-19 en el consumo de alcohol y otras drogas en Chile, dada a conocer por el Director Nacional de SENDA en junio de este año, se registró un 53 por ciento más de ingesta de medicamentos antidepresivos sin prescripción de un especialista.
+
+Según lo anterior, resulta interesante plantear relaciones que asocien otros datos para extraer mayor valor. Por ejemplo, cuál es la relación existente entre los grupos que aumentaron sostenidamente su cantidad de atenciones (15 a 19 años y 60 años y más) y el aumento de consumo de antidepresivos sin prescripción en los mismos grupos. Esta relación también puede estudiarse entre el grupo de mujeres y hombres.
+
+Por otra parte, es un desafío complejo lograr acceder a datos no existentes; es decir, no podemos cuantificar el nivel real de deterioro en la salud mental que se produce al suspender abruptamente las atenciones, ya que no existen los medios para reportar dicho fenómeno. 
+
+A modo de conclusión, se hace evidente la urgencia de analizar este tema en mayor profundidad, ya que el deterioro de la salud mental que hemos observado en la población chilena durante estos últimos años puede tener reprecusiones a futuro que son insospechadas.
+
+<br>
+
+## Bibliografía
+
+1. Vicente, Benjamín, Saldivia, Sandra, & Pihán, Rolando. (2016). Prevalencias y brechas hoy: salud mental mañana. Acta bioethica, 22(1), 51-61. https://dx.doi.org/10.4067/S1726-569X2016000100006
+
+2. R Core Team (2021). R: A language and environment for statistical computing. R  Foundation for Statistical Computing, Vienna, Austria. URL  https://www.R-project.org/.
+
+3. Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686,  https://doi.org/10.21105/joss.01686
+
+
+
+
+
+
